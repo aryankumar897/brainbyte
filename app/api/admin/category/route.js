@@ -1,63 +1,117 @@
 
+
+
+// Importing NextResponse for handling HTTP responses in Next.js
 import { NextResponse } from "next/server";
 
+// Importing dbConnect to establish a connection to the MongoDB database
 import dbConnect from "@/utils/dbConnect";
-import Category from  "@/models/Category"
-import slugify from 'slugify'
 
+// Importing Category model to interact with the "Category" collection
+import Category from "@/models/Category";
+
+// Importing slugify to create slugs from category names for SEO-friendly URLs
+import slugify from "slugify";
+
+// GET function to fetch all categories
 export async function GET() {
-
+  // Establishing a connection to the database
   await dbConnect();
 
   try {
+    // Fetching all categories from the Category collection, sorted by creation date in descending order
+    const category = await Category.find({}).sort({ createdAt: -1 });
 
-    const category = await Category.find({}).sort({ createdAt: -1 })
-
-   // console.log("allcat", category)
-
-    return NextResponse.json(category)
-
-
-
-
+    // Returning the categories as a JSON response
+    return NextResponse.json(category);
   } catch (err) {
-
-    return NextResponse.json({ err: err.message }, { status: 500 })
-
-
+    // If an error occurs, returning a 500 error with the error message
+    return NextResponse.json({ err: err.message }, { status: 500 });
   }
-
 }
 
-
-
-
+// POST function to create a new category
 export async function POST(req) {
-
+  // Establishing a connection to the database
   await dbConnect();
 
-  //console.log("hello")
-
+  // Parsing the incoming request body as JSON
   const body = await req.json();
 
-  const { name } = body
+  // Extracting the "name" field from the request body
+  const { name } = body;
 
   try {
+    // Creating a new category in the Category collection with the provided name
+    // Also generating a slug from the name for better URL structure and SEO
+    const category = await Category.create({ name, slug: slugify(name) });
 
-
-    const category = await Category.create({ name, slug:slugify(name)   })
-
-
-    return NextResponse.json(category)
-
+    // Returning the created category as a JSON response
+    return NextResponse.json(category);
   } catch (err) {
-    return NextResponse.json({ err: err.message }, { status: 500 })
-
+    // If an error occurs, returning a 500 error with the error message
+    return NextResponse.json({ err: err.message }, { status: 500 });
   }
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { NextResponse } from "next/server";
+
+// import dbConnect from "@/utils/dbConnect";
+// import Category from "@/models/Category";
+// import slugify from "slugify";
+
+// export async function GET() {
+//   await dbConnect();
+
+//   try {
+//     const category = await Category.find({}).sort({ createdAt: -1 });
+
+//     // console.log("allcat", category)
+
+//     return NextResponse.json(category);
+//   } catch (err) {
+//     return NextResponse.json({ err: err.message }, { status: 500 });
+//   }
+// }
+
+// export async function POST(req) {
+//   await dbConnect();
+
+//   //console.log("hello")
+
+//   const body = await req.json();
+
+//   const { name } = body;
+
+//   try {
+//     const category = await Category.create({ name, slug: slugify(name) });
+
+//     return NextResponse.json(category);
+//   } catch (err) {
+//     return NextResponse.json({ err: err.message }, { status: 500 });
+//   }
+// }

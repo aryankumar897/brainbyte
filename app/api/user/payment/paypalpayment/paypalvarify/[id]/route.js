@@ -1,74 +1,195 @@
-import { NextResponse } from "next/server";
-import dbConnect from "@/utils/dbConnect";
-import { v4 as uuidv4 } from "uuid";
 
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/utils/authOptions";
-import CourseOrder from "@/models/courseorder";
-import UserCourse from "@/models/usercourse";
-import CurriculumCourse from "@/models/CurriculumCourse";
 
-import paypal from "@paypal/checkout-server-sdk";
+// Importing necessary modules and functions
+import { NextResponse } from "next/server"; // Import Next.js response handling for returning HTTP responses
+import dbConnect from "@/utils/dbConnect"; // Import the database connection utility
+import { v4 as uuidv4 } from "uuid"; // Import the UUID library to generate unique order IDs
+
+import { getServerSession } from "next-auth/next"; // Import function to get the current server session (user data)
+import { authOptions } from "@/utils/authOptions"; // Import authentication options for session management
+import CourseOrder from "@/models/courseorder"; // Import the CourseOrder model (for handling course orders in the DB)
+import UserCourse from "@/models/usercourse"; // Import the UserCourse model (for associating courses with users)
+import CurriculumCourse from "@/models/CurriculumCourse"; // Import the CurriculumCourse model (for fetching course data)
+
+import paypal from "@paypal/checkout-server-sdk"; // Import PayPal SDK for handling PayPal transactions
+
+// Create PayPal environment for Sandbox (test environment)
 let environment = new paypal.core.SandboxEnvironment(
-  "AceW9nJb3-RlOq1F9qpl40eCvABcWpTtxCO5rTu47RpdFOoAiQGJSRRKqAPVodkMWTUbVCAyNpBRaZDL",
-  "EHGdvjb7JZ2dnhivVEyI_LAJPEWLxOzkxcFkcivqc_HH4nnqUbcYscfqVsOLwxbqiFY7OqHMJkluJoT0"
+  "AceW9nJb3-RlOq1F9qpl40eCvABcWpTtxCO5rTu47RpdFOoAiQGJSRRKqAPVodkMWTUbVCAyNpBRaZDL", // PayPal client ID (Sandbox)
+  "EHGdvjb7JZ2dnhivVEyI_LAJPEWLxOzkxcFkcivqc_HH4nnqUbcYscfqVsOLwxbqiFY7OqHMJkluJoT0" // PayPal client secret (Sandbox)
 );
+
+// Create a PayPal HTTP client to execute requests
 let client = new paypal.core.PayPalHttpClient(environment);
 
-export async function GET(req,context) {
+// Define the GET request handler to capture PayPal payment and process order
+export async function GET(req, context) {
+  // Establish a database connection
   await dbConnect();
+
+  // Retrieve the current session (user data)
   const session = await getServerSession(authOptions);
-  //const body = await req.json();
-  // console.log(body)
- // const { token, payerId } = body;
 
   try {
+    // Create a PayPal OrdersCaptureRequest object using the PayPal order ID from the context
     const request = new paypal.orders.OrdersCaptureRequest(context?.params?.id);
-    request.requestBody({});
+    request.requestBody({}); // Empty body as no additional data is needed for the capture request
 
+    // Execute the PayPal request to capture the payment
     const response = await client.execute(request);
-    console.log("response  xxxx", response);
+    console.log("response  xxxx", response); // Log the response for debugging
+
+    // Extract the transaction reference ID from the PayPal response
     const refrence = response?.result?.purchase_units[0].reference_id;
 
-    const value =
-      response?.result?.purchase_units[0].payments?.captures[0].amount?.value;
+    // Extract the payment amount from the PayPal response
+    const value = response?.result?.purchase_units[0].payments?.captures[0].amount?.value;
 
-    const paypalamount = value 
+    // Set the payment amount
+    const paypalamount = value;
 
+    // Fetch the course associated with the payment using the reference ID (course ID)
     const course = await CurriculumCourse.findOne({
-      _id: refrence,
+      _id: refrence, // Use the course ID stored in the PayPal response
     }).sort({
-      createdAt: -1,
+      createdAt: -1, // Sort by creation date in descending order to get the most recent course
     });
 
+    // Check if the payment status is "COMPLETED"
     if (response?.result?.status === "COMPLETED") {
+      // Create a new CourseOrder record to store the order details in the database
       const orders = await CourseOrder.create({
-        user_id: session?.user?._id,
-        course_name: course?.title,
-        transaction_id: course?._id,
-        order_id: uuidv4(),
-        payment_provider: "Paypal",
-        amount: paypalamount,
-
-        payment_status: "paid",
+        user_id: session?.user?._id, // Store the user ID from the session
+        course_name: course?.title, // Store the course title
+        transaction_id: course?._id, // Store the course ID as the transaction ID
+        order_id: uuidv4(), // Generate a unique order ID using UUID
+        payment_provider: "Paypal", // Store the payment provider as PayPal
+        amount: paypalamount, // Store the payment amount
+        payment_status: "paid", // Mark the payment status as "paid"
       });
 
+      // Create a UserCourse record to associate the user with the purchased course
       const usercourse = await UserCourse.create({
-        user_id: session?.user?._id,
-        course_id: course?._id,
+        user_id: session?.user?._id, // Store the user ID
+        course_id: course?._id, // Store the course ID
       });
 
-      console.log("orders", orders);
-      console.log("usercourse", usercourse);
+      console.log("orders", orders); // Log the created order for debugging
+      console.log("usercourse", usercourse); // Log the created user-course association for debugging
     } else {
+      // If the payment is not completed, return an error response
       return NextResponse.json({ err: "payment failed try again" });
     }
 
-    // Respond with success message
-    //  console.log("user created => ");
+    // Return a success response with the PayPal result
     return NextResponse.json({ success: response.result });
   } catch (err) {
+    // If there is an error, log it and return an error response
     console.error(err);
-    return NextResponse.json({ err: err.message }, { status: 500 });
+    return NextResponse.json({ err: err.message }, { status: 500 }); // Return a 500 error with the error message
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { NextResponse } from "next/server";
+// import dbConnect from "@/utils/dbConnect";
+// import { v4 as uuidv4 } from "uuid";
+
+// import { getServerSession } from "next-auth/next";
+// import { authOptions } from "@/utils/authOptions";
+// import CourseOrder from "@/models/courseorder";
+// import UserCourse from "@/models/usercourse";
+// import CurriculumCourse from "@/models/CurriculumCourse";
+
+// import paypal from "@paypal/checkout-server-sdk";
+// let environment = new paypal.core.SandboxEnvironment(
+//   "AceW9nJb3-RlOq1F9qpl40eCvABcWpTtxCO5rTu47RpdFOoAiQGJSRRKqAPVodkMWTUbVCAyNpBRaZDL",
+//   "EHGdvjb7JZ2dnhivVEyI_LAJPEWLxOzkxcFkcivqc_HH4nnqUbcYscfqVsOLwxbqiFY7OqHMJkluJoT0"
+// );
+// let client = new paypal.core.PayPalHttpClient(environment);
+
+// export async function GET(req,context) {
+//   await dbConnect();
+//   const session = await getServerSession(authOptions);
+//   //const body = await req.json();
+//   // console.log(body)
+//  // const { token, payerId } = body;
+
+//   try {
+//     const request = new paypal.orders.OrdersCaptureRequest(context?.params?.id);
+//     request.requestBody({});
+
+//     const response = await client.execute(request);
+//     console.log("response  xxxx", response);
+//     const refrence = response?.result?.purchase_units[0].reference_id;
+
+//     const value =
+//       response?.result?.purchase_units[0].payments?.captures[0].amount?.value;
+
+//     const paypalamount = value 
+
+//     const course = await CurriculumCourse.findOne({
+//       _id: refrence,
+//     }).sort({
+//       createdAt: -1,
+//     });
+
+//     if (response?.result?.status === "COMPLETED") {
+//       const orders = await CourseOrder.create({
+//         user_id: session?.user?._id,
+//         course_name: course?.title,
+//         transaction_id: course?._id,
+//         order_id: uuidv4(),
+//         payment_provider: "Paypal",
+//         amount: paypalamount,
+
+//         payment_status: "paid",
+//       });
+
+//       const usercourse = await UserCourse.create({
+//         user_id: session?.user?._id,
+//         course_id: course?._id,
+//       });
+
+//       console.log("orders", orders);
+//       console.log("usercourse", usercourse);
+//     } else {
+//       return NextResponse.json({ err: "payment failed try again" });
+//     }
+
+//     // Respond with success message
+//     //  console.log("user created => ");
+//     return NextResponse.json({ success: response.result });
+//   } catch (err) {
+//     console.error(err);
+//     return NextResponse.json({ err: err.message }, { status: 500 });
+//   }
+// }
