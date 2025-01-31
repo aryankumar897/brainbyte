@@ -1,13 +1,7 @@
-"use client"
+"use client";
 
 import React from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Typography, Grid, useMediaQuery, useTheme } from "@mui/material";
 import {
   SiCplusplus,
   SiPython,
@@ -26,8 +20,21 @@ import {
 import { DiJava } from "react-icons/di";
 
 const Technologies = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+// useTheme hook is used to access the current Material-UI theme object, 
+// which includes breakpoints, colors, typography, and other style properties.
+const theme = useTheme();
+
+// useMediaQuery hook checks if the screen size matches the specified condition.
+// In this case, it checks if the screen width is smaller than or equal to the "sm" breakpoint (usually 600px).
+// This helps in determining if the device is a mobile device or if we should apply certain styles for mobile.
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
 
   const tools = [
     { name: "C++", icon: <SiCplusplus color="#00599C" size={40} /> },

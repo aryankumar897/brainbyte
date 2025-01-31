@@ -21,41 +21,152 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
-import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
-import DoorFrontOutlinedIcon from '@mui/icons-material/DoorFrontOutlined';
-import SwitchAccountIcon from '@mui/icons-material/SwitchAccount';
-import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
-import CastForEducationIcon from '@mui/icons-material/CastForEducation';
-
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
+import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
+import DoorFrontOutlinedIcon from "@mui/icons-material/DoorFrontOutlined";
+import SwitchAccountIcon from "@mui/icons-material/SwitchAccount";
+import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
+import CastForEducationIcon from "@mui/icons-material/CastForEducation";
 
 const Sidebar = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const router = useRouter();
-  const { data: session } = useSession(); // Fetch session data
 
-  const menuItems = [
-    { text: "Dashboard", icon: <HomeIcon sx={{ fontSize: "32px" }} />, link: "/dashboard/user" },
-    { text: "Profile", icon: <SwitchAccountIcon  sx={{ fontSize: "32px" }} />, link: "/dashboard/user/profile" },
-   
-   
-    { text: "Courses", icon: <BarChartIcon sx={{ fontSize: "32px" }} />, link: "/dashboard/user/courses" },
-    { text: "Subscription", icon: <BuildIcon sx={{ fontSize: "32px" }} />, link: "/dashboard/user/subscription" },
-    { text: "Pricing", icon: <ShoppingCartCheckoutIcon   sx={{ fontSize: "32px" }} />, link: "/pricing" },
-    { text: "Order History", icon: <ManageHistoryIcon   sx={{ fontSize: "32px" }} />, link: "/dashboard/user/orders" },
 
-  
-  
-    { text: "Home", icon: <DoorFrontOutlinedIcon sx={{ fontSize: "32px" }} />, link: "/" },
-    { text: "Course Order History", icon: <CastForEducationIcon  sx={{ fontSize: "32px" }} />, link: "/dashboard/user/course-orders" },
-  
-  
-    
-  ];
+// State to control whether the drawer (sidebar menu) is open or closed
+const [drawerOpen, setDrawerOpen] = useState(false); 
+
+// State to track whether an element (e.g., menu item) is being hovered over
+const [isHovered, setIsHovered] = useState(false); 
+
+// Get the current theme settings (useful for styling)
+const theme = useTheme(); 
+
+// Detect if the screen width is small (e.g., mobile devices) using Material-UI breakpoints
+const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); 
+
+// Get the router object to enable programmatic navigation
+const router = useRouter(); 
+
+// Get the user's session data (checks if the user is logged in and retrieves user details)
+const { data: session } = useSession(); 
+
+// Define an array of menu items for the sidebar navigation
+const menuItems = [
+  {
+    text: "Dashboard", // Display name of the menu item
+    icon: <HomeIcon sx={{ fontSize: "32px" }} />, // Icon for the menu item with a custom font size
+    link: "/dashboard/user", // The URL path to navigate to when clicked
+  },
+  {
+    text: "Profile",
+    icon: <SwitchAccountIcon sx={{ fontSize: "32px" }} />,
+    link: "/dashboard/user/profile",
+  },
+  {
+    text: "Courses",
+    icon: <BarChartIcon sx={{ fontSize: "32px" }} />,
+    link: "/dashboard/user/courses",
+  },
+  {
+    text: "Subscription",
+    icon: <BuildIcon sx={{ fontSize: "32px" }} />,
+    link: "/dashboard/user/subscription",
+  },
+  {
+    text: "Pricing",
+    icon: <ShoppingCartCheckoutIcon sx={{ fontSize: "32px" }} />,
+    link: "/pricing",
+  },
+  {
+    text: "Order History",
+    icon: <ManageHistoryIcon sx={{ fontSize: "32px" }} />,
+    link: "/dashboard/user/orders",
+  },
+  {
+    text: "Home",
+    icon: <DoorFrontOutlinedIcon sx={{ fontSize: "32px" }} />,
+    link: "/", // Navigates to the home page
+  },
+  {
+    text: "Course Order History",
+    icon: <CastForEducationIcon sx={{ fontSize: "32px" }} />,
+    link: "/dashboard/user/course-orders",
+  },
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // const [drawerOpen, setDrawerOpen] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
+
+  // const theme = useTheme();
+  // const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  // const router = useRouter();
+  // const { data: session } = useSession(); // Fetch session data
+
+  // const menuItems = [
+  //   {
+  //     text: "Dashboard",
+  //     icon: <HomeIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/dashboard/user",
+  //   },
+  //   {
+  //     text: "Profile",
+  //     icon: <SwitchAccountIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/dashboard/user/profile",
+  //   },
+
+  //   {
+  //     text: "Courses",
+  //     icon: <BarChartIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/dashboard/user/courses",
+  //   },
+  //   {
+  //     text: "Subscription",
+  //     icon: <BuildIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/dashboard/user/subscription",
+  //   },
+  //   {
+  //     text: "Pricing",
+  //     icon: <ShoppingCartCheckoutIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/pricing",
+  //   },
+  //   {
+  //     text: "Order History",
+  //     icon: <ManageHistoryIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/dashboard/user/orders",
+  //   },
+
+  //   {
+  //     text: "Home",
+  //     icon: <DoorFrontOutlinedIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/",
+  //   },
+  //   {
+  //     text: "Course Order History",
+  //     icon: <CastForEducationIcon sx={{ fontSize: "32px" }} />,
+  //     link: "/dashboard/user/course-orders",
+  //   },
+  // ];
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -128,23 +239,22 @@ const Sidebar = () => {
                 setDrawerOpen(false);
               }}
             >
-              <ListItemIcon 
-
-sx={{
-    color: "white",
-    minWidth: isHovered ? "50px" : "40px",
-    justifyContent: "center",
-    marginLeft: "20px",
-  }}
-
-             >
-                <ExitToAppIcon sx={{ fontSize: "32px" ,color:"blueviolet"}} />
+              <ListItemIcon
+                sx={{
+                  color: "white",
+                  minWidth: isHovered ? "50px" : "40px",
+                  justifyContent: "center",
+                  marginLeft: "20px",
+                }}
+              >
+                <ExitToAppIcon sx={{ fontSize: "32px", color: "blueviolet" }} />
               </ListItemIcon>
               {isHovered && (
-                <ListItemText primary="Logout"
-                sx={{ marginLeft: "10px", fontSize: "18px" }}
-                  />
-            )}
+                <ListItemText
+                  primary="Logout"
+                  sx={{ marginLeft: "10px", fontSize: "18px" }}
+                />
+              )}
             </ListItem>
           </List>
         </Drawer>
@@ -195,7 +305,6 @@ sx={{
             </ListItem>
           ))}
 
-     
           {/* Logout Item in Mobile Drawer */}
           <ListItem
             sx={{ cursor: "pointer" }}

@@ -9,22 +9,37 @@ import {
   CircularProgress,
   useTheme,
   useMediaQuery,
-  Divider
+  Divider,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import "highlight.js/styles/monokai.css";
 import { runAi } from "@/ai/ai";
-import Tab  from  "./Tab"
+import Tab from "./Tab";
 import dynamic from "next/dynamic";
 
 // Dynamically import ReactPlayer (ensures it’s client-side only)
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 const Content = ({ content, loading }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // For responsiveness
+
+
+
+// Retrieve the Material-UI theme to access theme properties like breakpoints, colors, and spacing
+const theme = useTheme();
+
+// Check if the current screen width is "small" (mobile) based on the theme's breakpoints
+// Returns `true` if the screen width is below the "sm" breakpoint, indicating a mobile device
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+
+
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // For responsiveness
+
+
 
   return (
     <>
@@ -63,7 +78,6 @@ const Content = ({ content, loading }) => {
             >
               <CardContent>
                 {/* Article Title */}
-
 
                 {content && content?.videourl ? (
                   <Box
@@ -105,15 +119,9 @@ const Content = ({ content, loading }) => {
                     <p>No video available for this lecture.</p>
                   </Box>
                 )}
-
-
               </CardContent>
-      
 
-              <Tab
-              content={content}
-              loading={loading}
-              />
+              <Tab content={content} loading={loading} />
             </Card>
           </>
         )}

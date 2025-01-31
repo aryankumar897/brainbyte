@@ -28,61 +28,152 @@ import CourseOrder from "@/components/user/courseorder/CourseOrder"
 
 
 const Home = () => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${process.env.API}/user/analytics`);
-        const result = await response.json();
-         console.log("data---",result)
-        setData(result);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+// State variables
+const [data, setData] = useState(null); // Stores fetched analytics data
+const [loading, setLoading] = useState(true); // Tracks if data is still being fetched
 
-  const pages = [
+// useEffect runs once when the component mounts to fetch analytics data
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      // Fetch analytics data from the API
+      const response = await fetch(`${process.env.API}/user/analytics`);
+
+      // Convert the response into JSON format
+      const result = await response.json();
+
+      // Log the data for debugging purposes
+      console.log("data---", result);
+
+      // Update state with fetched data
+      setData(result);
+
+      // Set loading to false as data is now available
+      setLoading(false);
+    } catch (error) {
+      // Log error message in case of an error
+      console.error("Failed to fetch data", error);
+
+      // Stop loading even if an error occurs
+      setLoading(false);
+    }
+  };
+
+  fetchData(); // Call the function to fetch data when the component is mounted
+}, []); // Empty dependency array ensures the effect runs only once
+
+// Define an array of pages with their names, icons, and respective analytics counts
+const pages = [
+  {
+    name: "Subscriptions",
+    icon: <BarChart />, // Subscription analytics icon
+    count: data?.userSubscriptionCount, // Fetches subscription count from data
+  },
+  {
+    name: "Orders",
+    icon: <ShoppingCart />, // Orders analytics icon
+    count: data?.userOrderCount, // Fetches order count from data
+  },
+  {
+    name: "User Courses",
+    icon: <People />, // User courses analytics icon
+    count: data?.userCourseCount, // Fetches user course count from data
+  },
+];
+
+// If data is still being loaded, display a centered loading spinner
+if (loading) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh", // Full viewport height for vertical centering
+      }}
+    >
+      <CircularProgress /> {/* MUI loading spinner */}
+    </Box>
+  );
+}
+
+// If data is null (failed to load), display an error message
+if (!data) {
+  return (
+    <Typography
+      variant="h6"
+      sx={{
+        textAlign: "center",
+        marginTop: "2rem", // Adds space from the top
+      }}
+    >
+      Failed to load data {/* Display message when API call fails */}
+    </Typography>
+  );
+}
+
+
+
+  // const [data, setData] = useState(null);
+  // const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(`${process.env.API}/user/analytics`);
+  //       const result = await response.json();
+  //        console.log("data---",result)
+  //       setData(result);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Failed to fetch data", error);
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
+  // const pages = [
    
-    { name: "Subscriptions", icon: <BarChart />, count: data?.userSubscriptionCount },
-    { name: "Orders", icon: <ShoppingCart />, count: data?.userOrderCount},
-    { name: "User Courses", icon: <People />, count: data?.userCourseCount},
+  //   { name: "Subscriptions", icon: <BarChart />, count: data?.userSubscriptionCount },
+  //   { name: "Orders", icon: <ShoppingCart />, count: data?.userOrderCount},
+  //   { name: "User Courses", icon: <People />, count: data?.userCourseCount},
    
-  ];
+  // ];
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         height: "100vh",
+  //       }}
+  //     >
+  //       <CircularProgress />
+  //     </Box>
+  //   );
+  // }
 
-  if (!data) {
-    return (
-      <Typography
-        variant="h6"
-        sx={{
-          textAlign: "center",
-          marginTop: "2rem",
-        }}
-      >
-        Failed to load data
-      </Typography>
-    );
-  }
+  // if (!data) {
+  //   return (
+  //     <Typography
+  //       variant="h6"
+  //       sx={{
+  //         textAlign: "center",
+  //         marginTop: "2rem",
+  //       }}
+  //     >
+  //       Failed to load data
+  //     </Typography>
+  //   );
+  // }
+
+
+
+
 
   return (
 <>

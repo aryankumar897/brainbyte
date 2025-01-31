@@ -19,51 +19,147 @@ import {
 import { useRouter } from "next/navigation";
 
 const Footer = () => {
-  const isSmallScreen = useMediaQuery("(max-width:600px)");
-  const router = useRouter();
 
-  const [categorydata, setCategoryData] = useState([]);
-  const [loading, setLoading] = useState(false);
+// Use useMediaQuery hook to determine if the screen size is small (max-width: 600px)
+const isSmallScreen = useMediaQuery("(max-width:600px)");
 
-  const fetchCurriculum = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${process.env.API}/homepage/catwithsubcate`);
-      const data = await response.json();
-      setCategoryData(data || []);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+// Use the router from next/router to handle navigation
+const router = useRouter();
 
-  useEffect(() => {
-    fetchCurriculum();
-  }, []);
+// State hook to store category data fetched from the API
+const [categorydata, setCategoryData] = useState([]);
 
-  const formattedCategories = categorydata.reduce((acc, item) => {
-    const categoryName = item.categoryId.name;
-    const categorySlug = item.categoryId.slug;
-    const subcategoryName = item.subcategoryId.name;
-    const subcategorySlug = item.subcategoryId.slug;
+// State hook to manage loading state (for showing loading indicators)
+const [loading, setLoading] = useState(false);
 
-    let category = acc.find((c) => c.name === categoryName);
-    if (!category) {
-      category = { name: categoryName, slug: categorySlug, subcategories: [] };
-      acc.push(category);
-    }
-
-    let subcategory = category.subcategories.find(
-      (sc) => sc.name === subcategoryName
+// Function to fetch curriculum data (categories with subcategories)
+const fetchCurriculum = async () => {
+  setLoading(true); // Set loading to true before starting the fetch
+  try {
+    // Fetch data from the API endpoint for categories and subcategories
+    const response = await fetch(
+      `${process.env.API}/homepage/catwithsubcate`
     );
-    if (!subcategory) {
-      subcategory = { name: subcategoryName, slug: subcategorySlug };
-      category.subcategories.push(subcategory);
-    }
 
-    return acc;
-  }, []);
+    // Parse the JSON data returned from the server
+    const data = await response.json();
+
+    // Set the fetched data to the state (categorydata)
+    setCategoryData(data || []);
+  } catch (error) {
+    // If there's an error during the fetch, log it to the console
+    console.error("Error fetching categories:", error);
+  } finally {
+    // Set loading to false after the fetch completes
+    setLoading(false);
+  }
+};
+
+// useEffect hook to call fetchCurriculum once when the component mounts
+useEffect(() => {
+  fetchCurriculum(); // Fetch category data when the component is mounted
+}, []); // Empty dependency array means this effect runs once after initial render
+
+// Transform the fetched category data to a more structured format
+const formattedCategories = categorydata.reduce((acc, item) => {
+  // Destructure category and subcategory names and slugs
+  const categoryName = item.categoryId.name;
+  const categorySlug = item.categoryId.slug;
+  const subcategoryName = item.subcategoryId.name;
+  const subcategorySlug = item.subcategoryId.slug;
+
+  // Check if the category already exists in the accumulator
+  let category = acc.find((c) => c.name === categoryName);
+
+  // If category doesn't exist, create a new category and add to accumulator
+  if (!category) {
+    category = { name: categoryName, slug: categorySlug, subcategories: [] };
+    acc.push(category);
+  }
+
+  // Check if the subcategory already exists within the found category
+  let subcategory = category.subcategories.find(
+    (sc) => sc.name === subcategoryName
+  );
+
+  // If subcategory doesn't exist, create a new subcategory and add it to the category
+  if (!subcategory) {
+    subcategory = { name: subcategoryName, slug: subcategorySlug };
+    category.subcategories.push(subcategory);
+  }
+
+  // Return the updated accumulator (array of formatted categories)
+  return acc;
+}, []); // Initial accumulator is an empty array
+
+
+
+
+
+
+
+
+
+
+
+
+  // const isSmallScreen = useMediaQuery("(max-width:600px)");
+  // const router = useRouter();
+
+  // const [categorydata, setCategoryData] = useState([]);
+  // const [loading, setLoading] = useState(false);
+
+  // const fetchCurriculum = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(
+  //       `${process.env.API}/homepage/catwithsubcate`
+  //     );
+  //     const data = await response.json();
+  //     setCategoryData(data || []);
+  //   } catch (error) {
+  //     console.error("Error fetching categories:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchCurriculum();
+  // }, []);
+
+  // const formattedCategories = categorydata.reduce((acc, item) => {
+  //   const categoryName = item.categoryId.name;
+  //   const categorySlug = item.categoryId.slug;
+  //   const subcategoryName = item.subcategoryId.name;
+  //   const subcategorySlug = item.subcategoryId.slug;
+
+  //   let category = acc.find((c) => c.name === categoryName);
+  //   if (!category) {
+  //     category = { name: categoryName, slug: categorySlug, subcategories: [] };
+  //     acc.push(category);
+  //   }
+
+  //   let subcategory = category.subcategories.find(
+  //     (sc) => sc.name === subcategoryName
+  //   );
+  //   if (!subcategory) {
+  //     subcategory = { name: subcategoryName, slug: subcategorySlug };
+  //     category.subcategories.push(subcategory);
+  //   }
+
+  //   return acc;
+  // }, []);
+
+
+
+
+
+
+
+
+
+
 
   return (
     <Box
@@ -77,11 +173,7 @@ const Footer = () => {
       <Grid container spacing={4}>
         {/* Social Media and Branding Section */}
         <Grid item xs={12} sm={4}>
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            sx={{ color: "green" }}
-          >
+          <Typography variant="h6" fontWeight="bold" sx={{ color: "green" }}>
             BrainyBytes
           </Typography>
           <Typography sx={{ mt: 2 }}>

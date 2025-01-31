@@ -5,8 +5,15 @@ import { useSession } from "next-auth/react";
 import Sidebar from "@/components/user/sidebar/Sidebar";
 import { useRouter } from "next/navigation";
 const CourseCreate = () => {
-  const { data: session } = useSession(); // Fetch session data
- const router = useRouter();
+
+  const { data: session } = useSession(); // Fetches the current user's session data (if logged in)
+const router = useRouter(); // Provides access to Next.js router for navigation
+
+
+//   const { data: session } = useSession(); // Fetch session data
+//  const router = useRouter();
+
+
   return (
     <>
       {/* Rotating border around the static user image */}

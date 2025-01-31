@@ -58,85 +58,176 @@ const CourseJourney = ({ course}) => {
 
 
 
+// State variables to track different phases of a course or curriculum.
+const [phase1, setPhase1] = useState(null);
+const [phase2, setPhase2] = useState(null);
+const [phase3, setPhase3] = useState(null);
+const [phase4, setPhase4] = useState(null);
 
-   const [phase1, setPhase1] = useState(null);
-   const [phase2, setPhase2] = useState(null);
-   const [phase3, setPhase3] = useState(null);
-   const [phase4, setPhase4] = useState(null);
+// useEffect hook to set phases when the `course` data changes.
+useEffect(() => {
+  // Assuming `course?.sections` is the data we want to use, this safely assigns it to each phase.
+  const data =  course?.sections || [];
+  
+  // Assign sections to each phase, defaulting to `null` if no data exists.
+  setPhase1(data[0] || null);
+  setPhase2(data[1] || null);
+  setPhase3(data[2] || null);
+  setPhase4(data[3] || null);
+}, [course]); // Re-run this effect whenever `course` data changes.
+
+// Transformed data for Phase 1.
+const transformedPhaseData = {
+  phase: "Phase 1",
+  title: phase1?.title, // Phase title is retrieved from `phase1`
+  steps: phase1?.lectures?.slice(0, 2).map((lecture, index) => ({
+    step: `Step ${index + 1}`,
+    title: lecture?.title, // Title of the lecture in phase 1
+    icon: index === 0 
+      ? <CheckCircleIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for the first step
+      : <PersonAddIcon sx={{ color: "#00FF66", marginRight: "8px" }} />,  // Icon for subsequent steps
+  })) || [],
+};
+
+// Transformed data for Phase 2.
+const transformedPhase2Data = {
+  phase: "Phase 2",
+  title: phase2?.title || "Default Title", // Default title if phase2 title is not available
+  steps: phase2?.lectures?.slice(0, 3).map((lecture, index) => ({
+    step: `Step ${index + 1}`,
+    title: lecture?.title, // Lecture title in phase 2
+    icon: index === 0 
+      ? <CodeIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for the first step
+      : index === 1 
+      ? <MergeTypeIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for second step
+      : <AssignmentTurnedInIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for third step
+  })) || [], // Ensure we always have an array, even if phase2 has no lectures.
+};
+
+// Transformed data for Phase 3.
+const transformedPhase3Data = {
+  phase: "Phase 3",
+  title: phase3?.title || "Default Title", // Default title if phase3 title is not available
+  steps: phase3?.lectures?.slice(0, 3).map((lecture, index) => ({
+    step: `Step ${index + 1}`,
+    title: lecture?.title, // Lecture title in phase 3
+    icon: index === 0 
+      ? <ArrowForwardIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for the first step
+      : index === 1 
+      ? <BuildIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for second step
+      : <GridViewIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for third step
+  })) || [], // Ensure we always have an array, even if phase3 has no lectures.
+};
+
+// Transformed data for Phase 4.
+const transformedPhase4Data = {
+  phase: "Phase 4",
+  title: phase4?.title || "Default Title", // Default title if phase4 title is not available
+  steps: phase4?.lectures?.slice(0, 2).map((lecture, index) => ({
+    step: `Step ${index + 1}`,
+    title: lecture?.title, // Lecture title in phase 4
+    icon: index === 0 
+      ? <ArticleIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for the first step
+      : <GroupsIcon sx={{ color: "#00FF66", marginRight: "8px" }} />  // Icon for the second step
+  })) || [], // Ensure we always have an array, even if phase4 has no lectures.
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //  const [phase1, setPhase1] = useState(null);
+  //  const [phase2, setPhase2] = useState(null);
+  //  const [phase3, setPhase3] = useState(null);
+  //  const [phase4, setPhase4] = useState(null);
  
-   useEffect(() => {
-     // Assuming the input data is passed as `courseData` prop
-     const data =  course?.sections|| [];
+  //  useEffect(() => {
+  //    // Assuming the input data is passed as `courseData` prop
+  //    const data =  course?.sections|| [];
  
-     // Safely assign data to each state variable
-     setPhase1(data[0] || null);
-     setPhase2(data[1] || null);
-     setPhase3(data[2] || null);
-     setPhase4(data[3] || null);
-   }, [course]);
+  //    // Safely assign data to each state variable
+  //    setPhase1(data[0] || null);
+  //    setPhase2(data[1] || null);
+  //    setPhase3(data[2] || null);
+  //    setPhase4(data[3] || null);
+  //  }, [course]);
 
 
-   const transformedPhaseData = {
-    phase: "Phase 1",
-    title: phase1?.title,
-    steps: phase1?.lectures?.slice(0, 2).map((lecture, index) => ({
-      step: `Step ${index + 1}`,
-      title: lecture?.title,
-      icon: index === 0 ? <CheckCircleIcon sx={{ color: "#00FF66", marginRight: "8px" }}/>  :  <PersonAddIcon sx={{ color: "#00FF66", marginRight: "8px" }} />,
-    })),
-  }
+  //  const transformedPhaseData = {
+  //   phase: "Phase 1",
+  //   title: phase1?.title,
+  //   steps: phase1?.lectures?.slice(0, 2).map((lecture, index) => ({
+  //     step: `Step ${index + 1}`,
+  //     title: lecture?.title,
+  //     icon: index === 0 ? <CheckCircleIcon sx={{ color: "#00FF66", marginRight: "8px" }}/>  :  <PersonAddIcon sx={{ color: "#00FF66", marginRight: "8px" }} />,
+  //   })),
+  // }
 
 
 
-  const transformedPhase2Data = {
-    phase: "Phase 2",
-    title: phase2?.title || "Default Title",
-    steps: phase2?.lectures?.slice(0, 3).map((lecture, index) => ({
-      step: `Step ${index + 1}`,
-      title: lecture?.title,
-      icon: index === 0 ? (
-        <CodeIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
-      ) : index === 1 ? (
-        <MergeTypeIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
-      ) : (
-        <AssignmentTurnedInIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
-      ),
-    })) || [],
-  };
+  // const transformedPhase2Data = {
+  //   phase: "Phase 2",
+  //   title: phase2?.title || "Default Title",
+  //   steps: phase2?.lectures?.slice(0, 3).map((lecture, index) => ({
+  //     step: `Step ${index + 1}`,
+  //     title: lecture?.title,
+  //     icon: index === 0 ? (
+  //       <CodeIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
+  //     ) : index === 1 ? (
+  //       <MergeTypeIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
+  //     ) : (
+  //       <AssignmentTurnedInIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
+  //     ),
+  //   })) || [],
+  // };
 
 
-  const transformedPhase3Data = {
-    phase: "Phase 3",
-    title: phase3?.title || "Default Title",
-    steps: phase3?.lectures?.slice(0, 3).map((lecture, index) => ({
-      step: `Step ${index + 1}`,
-      title: lecture?.title,
-      icon: index === 0 ? (
-        <ArrowForwardIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
-      ) : index === 1 ? (
-        <BuildIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
-      ) : (
-        <GridViewIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
-      ),
-    })) || [],
-  };
+  // const transformedPhase3Data = {
+  //   phase: "Phase 3",
+  //   title: phase3?.title || "Default Title",
+  //   steps: phase3?.lectures?.slice(0, 3).map((lecture, index) => ({
+  //     step: `Step ${index + 1}`,
+  //     title: lecture?.title,
+  //     icon: index === 0 ? (
+  //       <ArrowForwardIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
+  //     ) : index === 1 ? (
+  //       <BuildIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
+  //     ) : (
+  //       <GridViewIcon sx={{ color: "#00FF66", marginRight: "8px" }} />
+  //     ),
+  //   })) || [],
+  // };
   
 
 
-  const transformedPhase4Data = {
-    phase: "Phase 4",
-    title: phase4?.title || "Default Title",
-    steps: phase4?.lectures?.slice(0, 2).map((lecture, index) => ({
-      step: `Step ${index + 1}`,
-      title: lecture?.title,
-      icon: index === 0 ? 
-      <ArticleIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
-       : 
-       <GroupsIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
-        ,
+  // const transformedPhase4Data = {
+  //   phase: "Phase 4",
+  //   title: phase4?.title || "Default Title",
+  //   steps: phase4?.lectures?.slice(0, 2).map((lecture, index) => ({
+  //     step: `Step ${index + 1}`,
+  //     title: lecture?.title,
+  //     icon: index === 0 ? 
+  //     <ArticleIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
+  //      : 
+  //      <GroupsIcon sx={{ color: "#00FF66", marginRight: "8px" }} /> 
+  //       ,
 
-    })) || [],
-  };
+  //   })) || [],
+  // };
   
 
 

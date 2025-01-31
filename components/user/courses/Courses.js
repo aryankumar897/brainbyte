@@ -41,81 +41,170 @@ const courses = [
 ];
 
 const CoursesGrid = () => {
-  const router = useRouter();
-  const [course, setCourse] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await fetch(`${process.env.API}/user/courses`); // Replace with your API endpoint
-        if (!response.ok) {
-          throw new Error("Failed to fetch courses");
-        }
-        const data = await response.json();
+
+// Initialize Next.js router for navigation
+const router = useRouter();
+
+// State variables
+const [course, setCourse] = useState([]); // Stores the fetched courses data
+const [loading, setLoading] = useState(true); // Tracks if the data is still being fetched
+const [error, setError] = useState(null); // Stores any error message if the API call fails
+
+// useEffect runs once when the component mounts to fetch courses data
+useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      // Fetch courses data from the API
+      const response = await fetch(`${process.env.API}/user/courses`); // API endpoint for fetching courses
+
+      // If the response is not OK, throw an error
+      if (!response.ok) {
+        throw new Error("Failed to fetch courses");
+      }
+
+      // Convert response into JSON format
+      const data = await response.json();
+
+      // Update state with fetched data
+      setCourse(data);
+    } catch (err) {
+      // If an error occurs, store the error message in state
+      setError(err.message);
+    } finally {
+      // Ensure loading state is set to false whether success or error occurs
+      setLoading(false);
+    }
+  };
+
+  fetchCourses(); // Call the function to fetch courses when the component is mounted
+}, []); // Empty dependency array ensures the effect runs only once
+
+// Display a loading indicator while data is being fetched
+if (loading) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh", // Full viewport height for vertical centering
+      }}
+    >
+      <CircularProgress
+        size={80} // Increases spinner size
+        sx={{
+          color: "purple", // Customizes spinner color
+          animation: "spin 2s linear infinite", // Adds custom spinning animation
+        }}
+      />
+      <style>
+        {`
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            50% {
+              transform: rotate(180deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
+    </Box>
+  );
+}
+
+// If an error occurs during the API request, display an error message
+if (error) {
+  return <p>Error: {error}</p>;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//   const router = useRouter();
+//   const [course, setCourse] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   useEffect(() => {
+//     const fetchCourses = async () => {
+//       try {
+//         const response = await fetch(`${process.env.API}/user/courses`); // Replace with your API endpoint
+//         if (!response.ok) {
+//           throw new Error("Failed to fetch courses");
+//         }
+//         const data = await response.json();
 
       
-        setCourse(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+//         setCourse(data);
+//       } catch (err) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
 
-    fetchCourses();
-  }, []);
+//     fetchCourses();
+//   }, []);
 
   
 
- // Display loading indicator while data is loading
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress
-          size={80} // Makes it larger
-          sx={{
-            color: "purple", // Sets the color to purple
-            animation: "spin 2s linear infinite", // Adds custom animation
-          }}
-        />
-        <style>
-          {`
-            @keyframes spin {
-              0% {
-                transform: rotate(0deg);
-              }
-              50% {
-                transform: rotate(180deg);
-              }
-              100% {
-                transform: rotate(360deg);
-              }
-            }
-          `}
-        </style>
-      </Box>
-    );
-  }
+//  // Display loading indicator while data is loading
+//   if (loading) {
+//     return (
+//       <Box
+//         sx={{
+//           display: "flex",
+//           justifyContent: "center",
+//           alignItems: "center",
+//           height: "100vh",
+//         }}
+//       >
+//         <CircularProgress
+//           size={80} // Makes it larger
+//           sx={{
+//             color: "purple", // Sets the color to purple
+//             animation: "spin 2s linear infinite", // Adds custom animation
+//           }}
+//         />
+//         <style>
+//           {`
+//             @keyframes spin {
+//               0% {
+//                 transform: rotate(0deg);
+//               }
+//               50% {
+//                 transform: rotate(180deg);
+//               }
+//               100% {
+//                 transform: rotate(360deg);
+//               }
+//             }
+//           `}
+//         </style>
+//       </Box>
+//     );
+//   }
   
 
 
-
+//   if (error) return <p>Error: {error}</p>;
 
  
 
 
-  if (error) return <p>Error: {error}</p>;
-
- 
 
   return (
     <>

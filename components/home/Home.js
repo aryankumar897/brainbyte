@@ -20,88 +20,199 @@ import dynamic from "next/dynamic";
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 const HeroSection = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Responsive breakpoint
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const router = useRouter();
 
-  const [isFocused, setIsFocused] = useState(false); // State to track input focus
 
-  // Handle input change and fetch data
-  const handleInputChange = async (event) => {
-    const value = event.target.value;
-    setSearchTerm(value);
+// `useTheme` hook from Material-UI to get access to the current theme (like breakpoints, colors, etc.)
+const theme = useTheme();
 
-    // Handle Enter key press to reset
-    if (event.key === "Enter") {
-      setSearchTerm("");
-      setFilteredSuggestions([]);
-      setError(null);
-      setLoading(false);
-      return;
-    }
+// `useMediaQuery` hook checks if the screen size matches a mobile device breakpoint
+const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Responsive breakpoint for mobile devices (small screens)
 
-    if (value.trim() === "") {
-      setFilteredSuggestions([]);
+// State to store the current search term entered by the user
+const [searchTerm, setSearchTerm] = useState("");
 
-      setError(null); // Reset any existing error
-      return;
-    }
+// State to store the filtered suggestions based on the search input
+const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
-    setLoading(true);
-    setError(null);
+// State to track loading state while fetching data (e.g., showing a spinner)
+const [loading, setLoading] = useState(false);
 
-    try {
-      const response = await fetch(`${process.env.API}/search/${value}`);
+// State to store any error messages that might occur during the search process
+const [error, setError] = useState(null);
 
-      const data = await response.json();
+// `useRouter` hook from Next.js to handle navigation and routing
+const router = useRouter();
 
-      if (response.ok) {
-        const suggestions = [];
+// State to track whether the search input is focused or not (used for styling/input interactions)
+const [isFocused, setIsFocused] = useState(false); 
 
-        // Handle curriculum data
-        data.forEach((curriculum) => {
-          // Add the curriculum itself as a suggestion
-          suggestions.push({ type: "curriculum", ...curriculum });
 
-          // Handle lectures within each curriculum
-          curriculum.sections.forEach((section) => {
-            section.lectures.forEach((lecture) => {
-              suggestions.push({
-                type: "lecture",
-                curriculumTitle: curriculum.title,
-                sectionTitle: section.title,
-                lecture: lecture,
-              });
+// This function handles changes in the search input field and fetches filtered data
+const handleInputChange = async (event) => {
+  const value = event.target.value; // Get the current value of the input field
+  setSearchTerm(value); // Update the searchTerm state with the current value
+
+  // If the "Enter" key is pressed, reset the search input and suggestions
+  if (event.key === "Enter") {
+    setSearchTerm(""); // Clear the search term
+    setFilteredSuggestions([]); // Clear the suggestions list
+    setError(null); // Reset any errors
+    setLoading(false); // Stop the loading state
+    return;
+  }
+
+  // If the input is empty, clear the suggestions and errors
+  if (value.trim() === "") {
+    setFilteredSuggestions([]); // Clear suggestions
+    setError(null); // Reset errors
+    return;
+  }
+
+  setLoading(true); // Set loading state to true while fetching data
+  setError(null); // Reset any errors before making a new request
+
+  try {
+    // Fetch data from the server based on the current search term
+    const response = await fetch(`${process.env.API}/search/${value}`);
+
+    // Parse the response as JSON
+    const data = await response.json();
+
+    // If the response is successful (status 200), process the data
+    if (response.ok) {
+      const suggestions = []; // Initialize an array to store the suggestions
+
+      // Loop through the data to handle curriculum and lecture suggestions
+      data.forEach((curriculum) => {
+        // Add the curriculum itself as a suggestion
+        suggestions.push({ type: "curriculum", ...curriculum });
+
+        // Loop through sections and lectures within each curriculum and add them as suggestions
+        curriculum.sections.forEach((section) => {
+          section.lectures.forEach((lecture) => {
+            suggestions.push({
+              type: "lecture", // Type of suggestion (lecture)
+              curriculumTitle: curriculum.title, // Title of the curriculum
+              sectionTitle: section.title, // Title of the section
+              lecture: lecture, // Lecture data
             });
           });
         });
+      });
 
-        // Set filtered suggestions
-        setFilteredSuggestions(suggestions);
-      } else {
-        setError("No data found");
-        setFilteredSuggestions([]);
-      }
-    } catch (err) {
-      setError("Failed to fetch data");
-      setFilteredSuggestions([]);
-    } finally {
-      setLoading(false);
+      // Set the filtered suggestions based on the data
+      setFilteredSuggestions(suggestions);
+    } else {
+      setError("No data found"); // Set error message if no data was returned
+      setFilteredSuggestions([]); // Clear suggestions if no data found
     }
-  };
+  } catch (err) {
+    setError("Failed to fetch data"); // Set error message in case of network/other failures
+    setFilteredSuggestions([]); // Clear suggestions in case of error
+  } finally {
+    setLoading(false); // Set loading state to false after the request is completed (either success or failure)
+  }
+};
 
-  const handleSuggestionClick = (suggestion) => {
-    if (suggestion.type === "curriculum") {
-      router.push(`/content/${suggestion?.slug}`);
-    } else if (suggestion.type === "lecture") {
-      // Adjusted path for lecture
-      router.push(`/content/${suggestion?.lecture?.slug}`);
-    }
-  };
+// This function handles the click event when a user selects a suggestion from the list
+const handleSuggestionClick = (suggestion) => {
+  // If the selected suggestion is of type "curriculum", navigate to the curriculum page
+  if (suggestion.type === "curriculum") {
+    router.push(`/content/${suggestion?.slug}`); // Navigate to the curriculum page using its slug
+  } else if (suggestion.type === "lecture") {
+    // If the selected suggestion is of type "lecture", navigate to the lecture page
+    router.push(`/content/${suggestion?.lecture?.slug}`); // Navigate to the lecture page using its slug
+  }
+};
+
+
+
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Responsive breakpoint
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
+  // const router = useRouter();
+
+  // const [isFocused, setIsFocused] = useState(false); // State to track input focus
+
+  // // Handle input change and fetch data
+  // const handleInputChange = async (event) => {
+  //   const value = event.target.value;
+  //   setSearchTerm(value);
+
+  //   // Handle Enter key press to reset
+  //   if (event.key === "Enter") {
+  //     setSearchTerm("");
+  //     setFilteredSuggestions([]);
+  //     setError(null);
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   if (value.trim() === "") {
+  //     setFilteredSuggestions([]);
+
+  //     setError(null); // Reset any existing error
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const response = await fetch(`${process.env.API}/search/${value}`);
+
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       const suggestions = [];
+
+  //       // Handle curriculum data
+  //       data.forEach((curriculum) => {
+  //         // Add the curriculum itself as a suggestion
+  //         suggestions.push({ type: "curriculum", ...curriculum });
+
+  //         // Handle lectures within each curriculum
+  //         curriculum.sections.forEach((section) => {
+  //           section.lectures.forEach((lecture) => {
+  //             suggestions.push({
+  //               type: "lecture",
+  //               curriculumTitle: curriculum.title,
+  //               sectionTitle: section.title,
+  //               lecture: lecture,
+  //             });
+  //           });
+  //         });
+  //       });
+
+  //       // Set filtered suggestions
+  //       setFilteredSuggestions(suggestions);
+  //     } else {
+  //       setError("No data found");
+  //       setFilteredSuggestions([]);
+  //     }
+  //   } catch (err) {
+  //     setError("Failed to fetch data");
+  //     setFilteredSuggestions([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleSuggestionClick = (suggestion) => {
+  //   if (suggestion.type === "curriculum") {
+  //     router.push(`/content/${suggestion?.slug}`);
+  //   } else if (suggestion.type === "lecture") {
+  //     // Adjusted path for lecture
+  //     router.push(`/content/${suggestion?.lecture?.slug}`);
+  //   }
+  // };
+
+
+
+
 
   return (
     <>

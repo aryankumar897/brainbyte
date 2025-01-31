@@ -13,8 +13,21 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const FAQ = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+// useTheme hook is used to access the current Material-UI theme object, 
+// which includes breakpoints, colors, typography, and other style properties.
+const theme = useTheme();
+
+// useMediaQuery hook checks if the screen size matches the specified condition.
+// In this case, it checks if the screen width is smaller than or equal to the "sm" breakpoint (usually 600px).
+// This helps in determining if the device is a mobile device or if we should apply certain styles for mobile.
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+
+
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // FAQ data
   const faqs = [

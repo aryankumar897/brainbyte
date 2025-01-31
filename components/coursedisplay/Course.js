@@ -72,15 +72,7 @@ export default function HomePage({ course, loading }) {
 
   const dummyData = "This is the brochure content. You can download this file.";
 
-  // const handleDownload = () => {
-  //   const doc = new jsPDF();
 
-  //   // Add content to PDF
-  //   doc.text(dummyData, 10, 10);
-
-  //   // Save the PDF with a filename
-  //   doc.save("Brochure.pdf");
-  // };
 
   const handleDownload = () => {
     if (!course) return; // Ensure that data is available before generating the PDF

@@ -200,8 +200,6 @@
 //   );
 // }
 
-
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -222,57 +220,123 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 export default function LodashAccordion() {
-  const searchParams = useSearchParams();
-  const slug = searchParams.get("search");
 
-  const [showAccordion, setShowAccordion] = useState(true);
-  const router = useRouter();
-  const [curriculum, setCurriculum] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [expandedAccordion, setExpandedAccordion] = useState(null);
-  const [selectedLecture, setSelectedLecture] = useState(null);
 
-  // Load states from localStorage
+  
+  // Import necessary hooks from React and Next.js
+  const searchParams = useSearchParams(); // Hook to access URL search parameters
+  const slug = searchParams.get("search"); // Extract the value of the 'search' query parameter from the URL
+
+  // State variables to manage UI and data
+  const [showAccordion, setShowAccordion] = useState(true); // State to control whether the accordion sections are visible
+  const router = useRouter(); // Next.js router instance for navigation
+  const [curriculum, setCurriculum] = useState([]); // State to store the fetched curriculum data (array of sections)
+  const [loading, setLoading] = useState(false); // Boolean state to track whether data is being loaded
+  const [expandedAccordion, setExpandedAccordion] = useState(null); // Stores the index of the currently expanded accordion section (null means none)
+  const [selectedLecture, setSelectedLecture] = useState(null); // Stores the title of the currently selected lecture
+
+  // Load previously saved UI states from localStorage when the component mounts
   useEffect(() => {
-    const storedExpandedAccordion = localStorage.getItem("expandedAccordion");
-    const storedSelectedLecture = localStorage.getItem("selectedLecture");
+    const storedExpandedAccordion = localStorage.getItem("expandedAccordion"); // Retrieve the last expanded accordion section from localStorage
+    const storedSelectedLecture = localStorage.getItem("selectedLecture"); // Retrieve the last selected lecture title from localStorage
+
     if (storedExpandedAccordion) {
-      setExpandedAccordion(Number(storedExpandedAccordion));
+      setExpandedAccordion(Number(storedExpandedAccordion)); // Convert stored string value to a number and set it in state
     }
     if (storedSelectedLecture) {
-      setSelectedLecture(storedSelectedLecture);
+      setSelectedLecture(storedSelectedLecture); // Set the previously selected lecture in state
     }
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
+  // Fetch curriculum data whenever the 'slug' (search query) changes
   useEffect(() => {
     if (slug) {
-      fetchCurriculum(slug);
+      // Only fetch if slug is not null or undefined
+      fetchCurriculum(slug); // Call the function to fetch curriculum based on the given slug
     }
-  }, [slug]);
+  }, [slug]); // Runs every time `slug` changes
 
+  // Function to fetch curriculum data from the API based on the slug
   const fetchCurriculum = async (slug) => {
-    setLoading(true);
+    setLoading(true); // Set loading state to true before fetching data
     try {
-      const response = await fetch(`${process.env.API}/user/accordion/${slug}`);
-      const data = await response.json();
-      setCurriculum(data?.sections || []);
+      const response = await fetch(`${process.env.API}/user/accordion/${slug}`); // Make an API request to get the curriculum data
+      const data = await response.json(); // Parse the response JSON
+
+      setCurriculum(data?.sections || []); // Update state with the received curriculum data, defaulting to an empty array if no sections exist
     } catch (error) {
-      console.error("Error fetching curriculum:", error);
+      console.error("Error fetching curriculum:", error); // Log any errors encountered while fetching data
     }
-    setLoading(false);
+    setLoading(false); // Set loading state to false after fetching is complete
   };
 
+  // Function to handle expanding/collapsing an accordion section
   const handleAccordionChange = (index) => {
-    const newExpanded = expandedAccordion === index ? null : index;
-    setExpandedAccordion(newExpanded); // Toggle accordion
-    localStorage.setItem("expandedAccordion", newExpanded); // Persist state to localStorage
+    const newExpanded = expandedAccordion === index ? null : index; // Toggle accordion: if the same index is clicked, collapse it; otherwise, expand it
+    setExpandedAccordion(newExpanded); // Update state with the new expanded section index
+    localStorage.setItem("expandedAccordion", newExpanded); // Persist the expanded section index in localStorage for state retention after page reload
   };
 
+  // Function to handle selecting a lecture from the curriculum
   const handleContentSelection = (lecture) => {
-    setSelectedLecture(lecture?.title);
-    localStorage.setItem("selectedLecture", lecture?.title); // Persist selected lecture
+    setSelectedLecture(lecture?.title); // Update state with the selected lecture's title
+    localStorage.setItem("selectedLecture", lecture?.title); // Save the selected lecture title to localStorage to persist the selection
+
+    // Redirect the user to the lecture viewing page, passing the lecture slug as a query parameter
     router.push(`/dashboard/user/watch?search=${lecture?.slug}`);
   };
+
+  // const searchParams = useSearchParams();
+  // const slug = searchParams.get("search");
+
+  // const [showAccordion, setShowAccordion] = useState(true);
+  // const router = useRouter();
+  // const [curriculum, setCurriculum] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [expandedAccordion, setExpandedAccordion] = useState(null);
+  // const [selectedLecture, setSelectedLecture] = useState(null);
+
+  // // Load states from localStorage
+  // useEffect(() => {
+  //   const storedExpandedAccordion = localStorage.getItem("expandedAccordion");
+  //   const storedSelectedLecture = localStorage.getItem("selectedLecture");
+  //   if (storedExpandedAccordion) {
+  //     setExpandedAccordion(Number(storedExpandedAccordion));
+  //   }
+  //   if (storedSelectedLecture) {
+  //     setSelectedLecture(storedSelectedLecture);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (slug) {
+  //     fetchCurriculum(slug);
+  //   }
+  // }, [slug]);
+
+  // const fetchCurriculum = async (slug) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${process.env.API}/user/accordion/${slug}`);
+  //     const data = await response.json();
+  //     setCurriculum(data?.sections || []);
+  //   } catch (error) {
+  //     console.error("Error fetching curriculum:", error);
+  //   }
+  //   setLoading(false);
+  // };
+
+  // const handleAccordionChange = (index) => {
+  //   const newExpanded = expandedAccordion === index ? null : index;
+  //   setExpandedAccordion(newExpanded); // Toggle accordion
+  //   localStorage.setItem("expandedAccordion", newExpanded); // Persist state to localStorage
+  // };
+
+  // const handleContentSelection = (lecture) => {
+  //   setSelectedLecture(lecture?.title);
+  //   localStorage.setItem("selectedLecture", lecture?.title); // Persist selected lecture
+  //   router.push(`/dashboard/user/watch?search=${lecture?.slug}`);
+  // };
 
   return (
     <>
@@ -384,9 +448,13 @@ export default function LodashAccordion() {
                         mb: 1,
                         cursor: "pointer",
                         bgcolor:
-                          selectedLecture === lecture.title ? "#8A12FC" : "inherit",
+                          selectedLecture === lecture.title
+                            ? "#8A12FC"
+                            : "inherit",
                         color:
-                          selectedLecture === lecture.title ? "#fff" : "inherit",
+                          selectedLecture === lecture.title
+                            ? "#fff"
+                            : "inherit",
                         borderRadius: "4px",
                         padding: "4px",
                         "&:hover": { color: "#008000" },
@@ -430,4 +498,3 @@ export default function LodashAccordion() {
     </>
   );
 }
-

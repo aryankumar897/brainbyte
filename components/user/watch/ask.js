@@ -10,9 +10,22 @@ import { DiscussionEmbed } from "disqus-react";
 
 const AskBox = ({content,loading}) => {
 
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
- if (loading) {
+// Retrieve the Material-UI theme to access theme properties like breakpoints, colors, and spacing
+const theme = useTheme();
+
+// Check if the current screen width is "small" (mobile) based on the theme's breakpoints
+// Returns `true` if the screen width is below the "sm" breakpoint, indicating a mobile device
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+
+
+    // const theme = useTheme();
+    // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+ 
+ 
+ 
+ 
+    if (loading) {
     return (
       <Box
         sx={{

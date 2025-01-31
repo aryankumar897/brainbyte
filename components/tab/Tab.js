@@ -33,38 +33,92 @@ const tabData = [
 ];
 
 const ScrollableTabs = () => {
-  const [value, setValue] = useState(0);
+// State hooks to manage local state in the component
+const [value, setValue] = useState(0); // Tracks the currently selected tab index (default is 0)
+const [subcategories, setSubcategories] = useState([]); // Stores the list of subcategories fetched from the API
+
+// Material-UI theme hook for accessing the current theme
+const theme = useTheme();
+
+// Use media query to check if the screen size is small (e.g., mobile)
+const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+// Next.js router hook for navigation between pages
+const router = useRouter();
+
+// Function to handle tab changes (e.g., when the user clicks on a different tab)
+const handleChange = (event, newValue) => {
+  setValue(newValue); // Update the state to reflect the new tab selection
+  
+  // Get the slug of the selected subcategory
+  const selectedSlug = subcategories[newValue]?.slug;
+  
+  // If a valid slug is found, navigate to the corresponding page
+  if (selectedSlug) {
+    router.push(`/content/${selectedSlug.toLowerCase()}`); // Redirect to a new page with the slug in the URL
+  }
+};
+
+// useEffect hook to fetch subcategories once when the component mounts (empty dependency array)
+useEffect(() => {
+  fetchSubCategories(); // Call the function to fetch subcategories
+}, []); // This runs only once when the component is mounted
+
+// Function to fetch subcategories data from the API
+const fetchSubCategories = async () => {
+  try {
+    // Make an API request to get subcategories data
+    const response = await fetch(`${process.env.API}/subcategory`); // API endpoint to fetch subcategories
+    const data = await response.json(); // Parse the JSON response into a JavaScript object
+    
+    // Update state with the fetched subcategories data
+    setSubcategories(data);
+  } catch (error) {
+    console.log("error", error); // Log any errors that occur during the fetch
+  }
+};
+
+
+
+
+
+  // const [value, setValue] = useState(0);
  
-  const [subcategories, setSubcategories] = useState([]);
-  const theme = useTheme();
+  // const [subcategories, setSubcategories] = useState([]);
+  // const theme = useTheme();
  
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Detect small screens
-  const router = useRouter(); // Next.js router for navigation
+  // const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Detect small screens
+  // const router = useRouter(); // Next.js router for navigation
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  // const handleChange = (event, newValue) => {
+  //   setValue(newValue);
  
-    const selectedSlug = subcategories[newValue]?.slug;
-    if (selectedSlug) {
-      router.push(`/content/${selectedSlug.toLowerCase()}`);
-    }
-  };
-  useEffect(() => {
-    fetchSubCategories();
-  }, []);
+  //   const selectedSlug = subcategories[newValue]?.slug;
+  //   if (selectedSlug) {
+  //     router.push(`/content/${selectedSlug.toLowerCase()}`);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchSubCategories();
+  // }, []);
 
-  const fetchSubCategories = async () => {
-    try {
-      const response = await fetch(`${process.env.API}/subcategory`);
-      const data = await response.json();
-      setSubcategories(data);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
+  // const fetchSubCategories = async () => {
+  //   try {
+  //     const response = await fetch(`${process.env.API}/subcategory`);
+  //     const data = await response.json();
+  //     setSubcategories(data);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
 
-  console.log("subcategories", subcategories);
 
+
+
+
+
+
+ 
   return (
     <Box
       sx={{

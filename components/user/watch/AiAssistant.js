@@ -5,33 +5,83 @@ import { runAi } from "@/ai/ai";
 import SendIcon from '@mui/icons-material/Send'; // Add an icon to the button
 
 const AIAssistant = () => {
-  const [loading, setLoading] = useState(false);
-  const [userInput, setUserInput] = useState('');
-  const [summarizedContent, setSummarizedContent] = useState('');
 
 
- 
- 
- 
+// State to track loading status (used to show/hide a spinner when AI is processing)
+const [loading, setLoading] = useState(false);
 
+// State to store user input (question or text to be processed)
+const [userInput, setUserInput] = useState('');
 
-  const handleSummarize = async () => {
-    if (userInput) {
-      setLoading(true); // Show loading spinner
-      try {
-        const prompt = ` provide  best  answer to this question ${userInput}`;
-        const summary = await runAi(prompt); // Call AI function for summarization
+// State to store AI-generated summarized content
+const [summarizedContent, setSummarizedContent] = useState('');
 
-        console.log("Summarized content:", summary);
-        setSummarizedContent(summary); // Update state with summary
-      } catch (error) {
-        console.log("Error summarizing:", error);
-        setSummarizedContent("Error summarizing the content.");
-      } finally {
-        setLoading(false); // Hide loading spinner
-      }
+// Function to handle AI-based summarization
+const handleSummarize = async () => {
+  if (userInput) { // Ensure user has entered some input
+    setLoading(true); // Set loading state to show a spinner while processing
+
+    try {
+      // Construct the AI prompt using the user’s input
+      const prompt = `Provide the best answer to this question: ${userInput}`;
+
+      // Call the AI function to generate a response
+      const summary = await runAi(prompt);
+
+      console.log("Summarized content:", summary); // Log the AI-generated response for debugging
+
+      // Update state with the AI-generated summary
+      setSummarizedContent(summary);
+    } catch (error) {
+      console.log("Error summarizing:", error); // Log any errors encountered
+
+      // Display an error message if summarization fails
+      setSummarizedContent("Error summarizing the content.");
+    } finally {
+      setLoading(false); // Reset loading state to hide the spinner
     }
-  };
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // const [loading, setLoading] = useState(false);
+  // const [userInput, setUserInput] = useState('');
+  // const [summarizedContent, setSummarizedContent] = useState('');
+
+
+ 
+
+  // const handleSummarize = async () => {
+  //   if (userInput) {
+  //     setLoading(true); // Show loading spinner
+  //     try {
+  //       const prompt = ` provide  best  answer to this question ${userInput}`;
+  //       const summary = await runAi(prompt); // Call AI function for summarization
+
+  //       console.log("Summarized content:", summary);
+  //       setSummarizedContent(summary); // Update state with summary
+  //     } catch (error) {
+  //       console.log("Error summarizing:", error);
+  //       setSummarizedContent("Error summarizing the content.");
+  //     } finally {
+  //       setLoading(false); // Hide loading spinner
+  //     }
+  //   }
+  // };
 
   
 

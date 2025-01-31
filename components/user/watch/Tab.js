@@ -12,17 +12,45 @@ import {
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; // Icon for Ask Question
 import SmartToyIcon from "@mui/icons-material/SmartToy"; // Icon for AI Assistant
-import Ask from  "./ask"
-import AIAssistant from "./AiAssistant"
-const Home = (   {   content,
-    loading   }     ) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // Handle Tab Change
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
+import Ask from "./ask";
+import AIAssistant from "./AiAssistant";
+const Home = ({ content, loading }) => {
+
+
+
+// State to track the currently active tab, initialized to the first tab (index 0)
+const [activeTab, setActiveTab] = useState(0);
+
+// Access the Material-UI theme to get theme-based properties
+const theme = useTheme();
+
+// Determine if the screen size is small (typically mobile devices)
+const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+// Function to handle tab changes
+const handleTabChange = (event, newValue) => {
+  setActiveTab(newValue); // Update the active tab state when the user clicks a tab
+};
+
+
+
+
+
+
+
+
+
+  // const [activeTab, setActiveTab] = useState(0);
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // // Handle Tab Change
+  // const handleTabChange = (event, newValue) => {
+  //   setActiveTab(newValue);
+  // };
+
+
+
+
 
   return (
     <>
@@ -121,13 +149,7 @@ const Home = (   {   content,
         <Box>
           {activeTab === 0 && (
             <Box>
-
-                <Ask
-                content={content}
-                loading={loading}
-                
-                />
-             
+              <Ask content={content} loading={loading} />
             </Box>
           )}
           {activeTab === 1 && (
@@ -138,10 +160,7 @@ const Home = (   {   content,
               <Typography variant="body1">
                 Interact with the AI assistant for quick and automated help.
               </Typography> */}
-<AIAssistant/>
-
-
-
+              <AIAssistant />
             </Box>
           )}
         </Box>
